@@ -1,0 +1,5 @@
+{ "dependencies": { "@elysiajs/html": "^0.7.3", "@types/node": "^20.10.4", "elysia": "^0.7.30", "fs": "^0.0.1-security" }, "name": "desdobramentos", "module": "index.ts", "type": "module", "devDependencies": {
+  "bun-types": "latest"
+}, "peerDependencies": {
+  "typescript": "^5.0.0"
+} }
