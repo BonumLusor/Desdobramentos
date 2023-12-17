@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="./style.css" />
+        <title>Desdobramentos</title>
+    </head>
+    <body>
+        <main>
+            <table id="table"></table>
+            <aside>
+                <form
+                    action=""
+                    id="form">
+                    <div class="options-menu">
+                        <div class="option-wrapper">
+                            <label for="">Quantidade selecionada</label>
+                            <span id="count"></span>
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="numbers-per-ticket"
+                                >Números por bilhete:</label
+                            >
+                            <input
+                                type="number"
+                                name="numbers-per-ticket"
+                                required
+                                min="1"
+                                max="80"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 100.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="condition">Condição:</label>
+                            <input
+                                type="number"
+                                name="condition"
+                                required
+                                min="1"
+                                max="10"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 10.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="guarantee">Garantia:</label>
+                            <input
+                                type="number"
+                                name="guarantee"
+                                required
+                                min="1"
+                                max="80"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 80.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="even-numbers">Números pares:</label>
+                            <input
+                                type="number"
+                                name="even-numbers"
+                                required
+                                min="1"
+                                max="40"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 40.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="odd-numbers">Números ímpares:</label>
+                            <input
+                                type="number"
+                                name="odd-numbers"
+                                required
+                                min="1"
+                                max="40"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 40.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="collum-numbers"
+                                >Números na mesma coluna:</label
+                            >
+                            <input
+                                type="number"
+                                name="collum-numbers"
+                                required
+                                min="1"
+                                max="8"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 8.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                        <div class="option-wrapper">
+                            <label for="line-numbers"
+                                >Números na mesma linha:</label
+                            >
+                            <input
+                                type="number"
+                                name="line-numbers"
+                                required
+                                min="1"
+                                max="10"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 10.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
+                    </div>
+                    <div class="button-wrapper">
+                        <button
+                            type="button"
+                            onclick="teste()">
+                            Feito!
+                        </button>
+                    </div>
+                </form>
+            </aside>
+        </main>
+        <div class="result-wrapper">
+            <h1>Resultado:</h1>
+            <div id="result"></div>
+        </div>
+    </body>
+</html>
+
+<script>
+    let tableStructure = '';
+
+    for (let i = 1; i <= 80; i++) {
+        if (i % 10 === 0) {
+            tableStructure += `<td> ${i} </td></tr>`;
+        } else if (i % 10 === 1) {
+            tableStructure += `<tr><td> ${i} </td>`;
+        } else {
+            tableStructure += `<td> ${i} </td>`;
+        }
+    }
+
+    document.getElementById('table').innerHTML = tableStructure;
+
+    let count = 0;
+    const countSpan = document.getElementById('count');
+    countSpan.innerHTML = count;
+
+    document.querySelectorAll('td').forEach((td) => {
+        td.addEventListener('click', () => {
+            if (td.classList.contains('selected')) {
+                td.classList.remove('selected');
+                count--;
+                countSpan.innerHTML = count;
+                return;
+            }
+            td.classList.toggle('selected');
+            count++;
+            countSpan.innerHTML = count;
+        });
+    });
+
+    function teste() {
+        let selectedNumbers = [];
+        document
+            .querySelectorAll('.selected')
+            .forEach((td) => selectedNumbers.push(parseInt(td.innerHTML)));
+        const form = document.getElementById('form');
+
+        data = {
+            selectedNumbers: selectedNumbers,
+            numbersPerTicket: parseInt(
+                form.elements.namedItem('numbers-per-ticket').value
+            ),
+            condition: parseInt(form.elements.namedItem('condition').value),
+            guarantee: parseInt(form.elements.namedItem('guarantee').value),
+            even: parseInt(form.elements.namedItem('even-numbers').value),
+            odd: parseInt(form.elements.namedItem('odd-numbers').value),
+            collum: parseInt(form.elements.namedItem('collum-numbers').value),
+            line: parseInt(form.elements.namedItem('line-numbers').value)
+        };
+
+        const resultTable = document.getElementById('result');
+
+        fetch('/getResult', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                resultTable.innerHTML = '';
+                data.forEach((rowData) => {
+                    let rowDiv = document.createElement('div');
+                    rowDiv.className = 'row';
+
+                    rowData.forEach((cellData) => {
+                        let cellDiv = document.createElement('div');
+                        cellDiv.className = 'cell';
+                        cellDiv.textContent = cellData;
+                        rowDiv.appendChild(cellDiv);
+                    });
+
+                    resultTable.appendChild(rowDiv);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>

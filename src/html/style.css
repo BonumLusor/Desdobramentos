@@ -1,0 +1,143 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    color: white;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #101013;
+}
+
+main {
+    display: grid;
+    place-items: center;
+    height: fit-content;
+    width: 100vw;
+    grid-template-columns: 2fr 1fr;
+}
+
+table {
+    width: 90%;
+    padding-bottom: 50px;
+    padding-top: 50px;
+}
+
+tr {
+    border: solid 1px white;
+    width: 100%;
+}
+
+td {
+    border: solid 1px white;
+    width: 10%;
+    height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+td:hover {
+    background-color: #1a1a1a;
+}
+
+.selected {
+    background-color: #1a1a1f;
+}
+
+.options-menu {
+    width: 30vw;
+}
+
+.option-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+input[type="number"] {
+    background-color: #101013;
+    border: solid 1px #101013;
+    border-bottom: solid 1px white;
+    text-align: center;
+    appearance: none;
+    width: 50px;
+}
+    
+input[type="number"]:focus {
+    outline: none;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    width: 100%;
+    padding-top: 10px;
+}
+
+button {
+    background-color: #101013;
+    border: solid 1px white;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    width: 50%;
+}
+
+.result {
+    display: table;
+}
+
+.row {
+    display: table-row;
+}
+
+.cell {
+    display: table-cell;
+    padding: 10px;
+    border: 1px solid #fff;
+}
+
+h1 {
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-left: 50px;
+}
+
+.result-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 50px;
+}
+
+@media (max-width: 700px) {
+    body {
+        grid-template-columns: 1fr;
+    }
+
+    .options-menu {
+        width: 100vw !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .option-wrapper {
+        width: 90vw !important;
+    }
+}
