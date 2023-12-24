@@ -2,24 +2,58 @@ import { origin } from 'bun';
 import { postData } from '../types/types.ts'
 import shamble from './shamble.ts';
 
-function sequencial(array:number[], limit:number) {
-    array.sort((a, b) => a - b);
+function hasSpecificDuplicate(array: number[], specificNumber: number): boolean {
 
-    let sequencial = 0;
-    let sequence = []
+    let counts: { [key: number]: number } = {};
+
+    for (let i = 0; i < array.length; i++) {
+        if(array[i] === 0) continue;
+        if (counts[array[i]]) {
+            counts[array[i]]++;
+        } else {
+            counts[array[i]] = 1;
+        }
+    }
+
+    return counts[specificNumber] > 1;
+}
+
+function sequencial(array:number[], limit:number) {
+    
+    let lineSequencial = 1;
+    let lineSequence = [];
+    let collumSequencial = 1;
+    let collumSequence = [];
+    
+    let units = array.map((number) => number % 10);
+
+    array.sort((a, b) => a - b);
 
     for (let i = 1; i < array.length; i++) {
 
-        if (array[i] - array[i - 1] === 1) {
-            sequencial++;   
+        if (units[i] == units[i - 1]) {
+            collumSequencial++;
         } else {
-            sequence.push(sequencial);
-            sequencial = 0;
+            collumSequence.push(collumSequencial);
+            collumSequencial = 1;
+        }
+
+        if (array[i] - array[i - 1] == 1) {
+            lineSequencial++;   
+        } else {
+            lineSequence.push(lineSequencial);
+            lineSequencial = 1;
         }
 
     }
+    lineSequence.push(lineSequencial);  
+    
+    const maxSequenceCollum = Math.max(...collumSequence);
+    const maxSequenceLine = Math.max(...lineSequence);
 
-    if (Math.max(...sequence) >= limit) return false;
+    if (maxSequenceLine > limit || maxSequenceCollum > limit) return false;
+    else if (maxSequenceCollum === limit && hasSpecificDuplicate(collumSequence, maxSequenceCollum) && limit !== 1) return false;
+    else if (maxSequenceLine === limit && hasSpecificDuplicate(lineSequence, maxSequenceLine) && limit !== 1) return false;
     else return true;
 }
 
@@ -27,7 +61,7 @@ export default function fill(array:number[], attributes:postData) {
 
     const evenNumbers = array.filter((number) => number % 2 == 0).length;
     const oddNumbers = array.filter((number) => number % 2 != 0).length;
-
+    let fail = false;
     if (evenNumbers > attributes.even || oddNumbers > attributes.odd) return null;
 
     const notIncludedNumbers = attributes.selectedNumbers.filter((number) => !array.includes(number));
@@ -50,17 +84,20 @@ export default function fill(array:number[], attributes:postData) {
 
     Object.entries(unitCounts).forEach(([key, value]) => {
         if (value > attributes.collum) {
-            return null;
+            fail = true;
         }
-        else if (value <= attributes.line) {
+        else if (value <= attributes.collum) {
             unitsToAdd[parseInt(key)] = attributes.collum - value;
         }
     });
 
+    if (fail) return null;
+
+
     let decadeCounts: { [key: number]: number } = {};
 
     array.forEach(num => {
-        let decade = Math.floor(num / 10);
+        let decade = Math.floor((num - 1) / 10);
         if (decadeCounts[decade]) {
             decadeCounts[decade]++;
         } else {
@@ -70,12 +107,14 @@ export default function fill(array:number[], attributes:postData) {
 
     Object.entries(decadeCounts).forEach(([key, value]) => {
         if (value > attributes.line) {
-            return null;
+            fail = true;
         }
         else if (value <= attributes.line) {
             decadesToAdd[parseInt(key)] = attributes.line - value;
         }
-    });
+    }); 
+
+    if (fail) return null;
 
     shamble(notIncludedNumbers);
 
@@ -92,25 +131,25 @@ export default function fill(array:number[], attributes:postData) {
             notIncludedNumbers[i] % 2 == 0 && 
             evenNumbersToFill > 0 &&
             unitsToAdd[notIncludedNumbers[i] % 10] > 0 &&
-            decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)] > 0
+            decadesToAdd[Math.floor((notIncludedNumbers[i] - 1) / 10)] > 0 &&
+            sequencial([...filledArray, notIncludedNumbers[i]], attributes.sequencial)
         ) {
-            if (!sequencial(filledArray, attributes.sequencial)) continue;
             filledArray.push(notIncludedNumbers[i]);
             evenNumbersToFill--;
             unitsToAdd[notIncludedNumbers[i] % 10]--;
-            decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)]--;
+            decadesToAdd[Math.floor((notIncludedNumbers[i] - 1) / 10)]--;
         }
         else if (
             notIncludedNumbers[i] % 2 != 0 &&
             oddNumbersToFill > 0 &&
             unitsToAdd[notIncludedNumbers[i] % 10] > 0 &&
-            decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)] > 0
+            decadesToAdd[Math.floor((notIncludedNumbers[i] - 1) / 10)] > 0 &&
+            sequencial([...filledArray, notIncludedNumbers[i]], attributes.sequencial)
         ) {
-            if (!sequencial(filledArray, attributes.sequencial)) continue;
             filledArray.push(notIncludedNumbers[i]);
             oddNumbersToFill--;
             unitsToAdd[notIncludedNumbers[i] % 10]--;
-            decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)]--;
+            decadesToAdd[Math.floor((notIncludedNumbers[i] - 1) / 10)]--;
         } else {
             continue;
         }
