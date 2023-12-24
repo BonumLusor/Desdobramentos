@@ -7,4 +7,5 @@ export type postData = {
     odd: number,
     collum: number,
     line: number,
+    sequencial: number,
 }

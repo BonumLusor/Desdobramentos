@@ -105,6 +105,19 @@
                                 oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 10.')"
                                 oninput="this.setCustomValidity('')" />
                         </div>
+                        <div class="option-wrapper">
+                            <label for="line-numbers"
+                                >Números sequenciais:</label
+                            >
+                            <input
+                                type="number"
+                                name="sequencial-numbers"
+                                required
+                                min="1"
+                                max="10"
+                                oninvalid="this.setCustomValidity('Por favor, insira um número entre 1 e 10.')"
+                                oninput="this.setCustomValidity('')" />
+                        </div>
                     </div>
                     <div class="button-wrapper">
                         <button
@@ -118,6 +131,8 @@
         </main>
         <div class="result-wrapper">
             <h1>Resultado:</h1>
+            <div id="length"></div>
+            </br>
             <div id="result"></div>
         </div>
     </body>
@@ -164,12 +179,13 @@
         const form = document.getElementById('form');
 
         const numbersPerTicket = parseInt(form.elements.namedItem('numbers-per-ticket').value),
-            condition = parseInt(form.elements.namedItem('condition').value),
-            guarantee = parseInt(form.elements.namedItem('guarantee').value),
+        condition = parseInt(form.elements.namedItem('condition').value),
+        guarantee = parseInt(form.elements.namedItem('guarantee').value),
             even = parseInt(form.elements.namedItem('even-numbers').value),
             odd = parseInt(form.elements.namedItem('odd-numbers').value),
             collum = parseInt(form.elements.namedItem('collum-numbers').value),
             line = parseInt(form.elements.namedItem('line-numbers').value);
+            sequencial = parseInt(form.elements.namedItem('sequencial-numbers').value);
 
             if (selectedNumbers.length < numbersPerTicket) {
                 alert('Por favor, selecione a quantidade de números desejada.');
@@ -195,10 +211,26 @@
                 alert('Por favor, insira uma quantidade de números na mesma linha menor ou igual a 10.');
                 return;
             }
-            if (!selectedNumbers || !numbersPerTicket || !guarantee || !even || !odd || !collum || !line) {
+            if (sequencial > 10) {
+                alert('Por favor, insira uma quantidade de números sequenciais menor ou igual a 10.');
+                return;
+            }
+            else
+            if (
+                selectedNumbers == null || selectedNumbers == undefined ||
+                numbersPerTicket == null || numbersPerTicket == undefined ||
+                guarantee == null || guarantee == undefined || 
+                even == null || even == undefined || 
+                odd == null || odd == undefined ||
+                collum == null || collum == undefined ||
+                line == null || line == undefined ||
+                sequencial == null || sequencial == undefined
+            ) {
                 alert('Por favor, preencha todos os campos.');
                 return;
             }
+
+
         
 
         data = {
@@ -209,27 +241,27 @@
             even,
             odd,
             collum,
-            line
+            line,
+            sequencial
         };
 
         const resultTable = document.getElementById('result');
 
-        fetch('/getResult', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/getResult');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
                 resultTable.innerHTML = '';
-                data.forEach((rowData) => {
-                    let rowDiv = document.createElement('div');
+                var data = JSON.parse(xhr.responseText);
+                const resultLength = document.getElementById('length');
+                resultLength.innerHTML = `Total de bilhetes: ${data.length}`;
+                data.forEach(function(rowData) {
+                    var rowDiv = document.createElement('div');
                     rowDiv.className = 'row';
 
-                    rowData.forEach((cellData) => {
-                        let cellDiv = document.createElement('div');
+                    rowData.forEach(function(cellData) {
+                        var cellDiv = document.createElement('div');
                         cellDiv.className = 'cell';
                         cellDiv.textContent = cellData;
                         rowDiv.appendChild(cellDiv);
@@ -237,9 +269,13 @@
 
                     resultTable.appendChild(rowDiv);
                 });
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+            } else {
+                console.error('Error:', xhr.status);
+            }
+        };
+        xhr.onerror = function() {
+            console.error('Request failed');
+        };
+        xhr.send(JSON.stringify(data));
     }
 </script>

@@ -2,11 +2,37 @@ import { origin } from 'bun';
 import { postData } from '../types/types.ts'
 import shamble from './shamble.ts';
 
+function sequencial(array:number[], limit:number) {
+    array.sort((a, b) => a - b);
+
+    let sequencial = 0;
+    let sequence = []
+
+    for (let i = 1; i < array.length; i++) {
+
+        if (array[i] - array[i - 1] === 1) {
+            sequencial++;   
+        } else {
+            sequence.push(sequencial);
+            sequencial = 0;
+        }
+
+    }
+
+    if (Math.max(...sequence) >= limit) return false;
+    else return true;
+}
+
 export default function fill(array:number[], attributes:postData) {
 
+    const evenNumbers = array.filter((number) => number % 2 == 0).length;
+    const oddNumbers = array.filter((number) => number % 2 != 0).length;
+
+    if (evenNumbers > attributes.even || oddNumbers > attributes.odd) return null;
+
     const notIncludedNumbers = attributes.selectedNumbers.filter((number) => !array.includes(number));
-    let evenNumbersToFill = attributes.even - array.filter((number) => number % 2 == 0).length; 
-    let oddNumbersToFill = attributes.odd - array.filter((number) => number % 2 != 0).length;
+    let evenNumbersToFill = attributes.even - evenNumbers; 
+    let oddNumbersToFill = attributes.odd - oddNumbers;
     let unitsToAdd: { [key: number]: number } = {};
     let decadesToAdd: { [key: number]: number } = {};
     let filledArray = [...array];
@@ -68,6 +94,7 @@ export default function fill(array:number[], attributes:postData) {
             unitsToAdd[notIncludedNumbers[i] % 10] > 0 &&
             decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)] > 0
         ) {
+            if (!sequencial(filledArray, attributes.sequencial)) continue;
             filledArray.push(notIncludedNumbers[i]);
             evenNumbersToFill--;
             unitsToAdd[notIncludedNumbers[i] % 10]--;
@@ -79,6 +106,7 @@ export default function fill(array:number[], attributes:postData) {
             unitsToAdd[notIncludedNumbers[i] % 10] > 0 &&
             decadesToAdd[Math.floor(notIncludedNumbers[i] / 10)] > 0
         ) {
+            if (!sequencial(filledArray, attributes.sequencial)) continue;
             filledArray.push(notIncludedNumbers[i]);
             oddNumbersToFill--;
             unitsToAdd[notIncludedNumbers[i] % 10]--;
