@@ -27,13 +27,10 @@ app.post('/getResult', async (context ) => {
 
     let combinations: number[][] = getCombinations(body.selectedNumbers, body.guarantee)
 
-    if(body.guarantee < body.numbersPerTicket)
-        combinations.forEach((array) => {
-            let filledArray: number[] | null = fill(array, body);
-            if (filledArray != null) result.push(filledArray);
-        }) 
-    else
-        result = combinations;
+    combinations.forEach((array) => {
+        let filledArray: number[] | null = fill(array, body);
+        if (filledArray != null) result.push(filledArray);
+    }) 
 
     return new Response(JSON.stringify(result))
   

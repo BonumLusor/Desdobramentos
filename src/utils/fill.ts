@@ -119,6 +119,14 @@ export default function fill(array:number[], attributes:postData) {
     shamble(notIncludedNumbers);
 
     let notEnoughNumbers = false;
+
+    if (attributes.guarantee === attributes.numbersPerTicket) {
+        if (sequencial(filledArray, attributes.sequencial)) {
+            return filledArray;
+        } else {
+            return null;
+        }
+    }
     
     for (let i = 0; filledArray.length < attributes.numbersPerTicket; i++) {
 
