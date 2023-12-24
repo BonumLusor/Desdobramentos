@@ -42,7 +42,11 @@ td:hover {
 }
 
 .selected {
-    background-color: #1a1a1f;
+    background-color: #9d9d9d;
+}
+
+.selected:hover {
+    background-color: #aaa;
 }
 
 .options-menu {

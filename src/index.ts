@@ -4,8 +4,7 @@ import { html } from '@elysiajs/html'
 
 // util
 import getCombinations from './utils/combination.ts'
-import guarantee from "./utils/guarantee.ts";
-import filter from "./utils/filter.ts";
+import fill from "./utils/fill.ts";
 
 // types
 import { postData } from './types/types.ts'
@@ -25,16 +24,14 @@ app.post('/getResult', async (context ) => {
   const body:postData = await context.body as postData;
 
   let result:number[][] = [];
-  
-  let guaranteed = guarantee(body.selectedNumbers, body.guarantee)
 
-  let combinations: number[][] = getCombinations(guaranteed.array, body.numbersPerTicket)
-  
+  let combinations: number[][] = getCombinations(body.selectedNumbers, body.guarantee)
+
 
   combinations.forEach((array) => {
-    let resultArray = filter(array, body, guaranteed.rejectedNumbers)
-    if (resultArray != null) result.push(resultArray)
-  })
+    let filledArray: number[] | null = fill(array, body, body.selectedNumbers);
+    if (filledArray != null) result.push(filledArray);
+  }) 
 
   return new Response(JSON.stringify(result))
   

@@ -109,7 +109,7 @@
                     <div class="button-wrapper">
                         <button
                             type="button"
-                            onclick="teste()">
+                            onclick="getResult()">
                             Feito!
                         </button>
                     </div>
@@ -156,24 +156,60 @@
         });
     });
 
-    function teste() {
+    function getResult() {
         let selectedNumbers = [];
         document
             .querySelectorAll('.selected')
             .forEach((td) => selectedNumbers.push(parseInt(td.innerHTML)));
         const form = document.getElementById('form');
 
+        const numbersPerTicket = parseInt(form.elements.namedItem('numbers-per-ticket').value),
+            condition = parseInt(form.elements.namedItem('condition').value),
+            guarantee = parseInt(form.elements.namedItem('guarantee').value),
+            even = parseInt(form.elements.namedItem('even-numbers').value),
+            odd = parseInt(form.elements.namedItem('odd-numbers').value),
+            collum = parseInt(form.elements.namedItem('collum-numbers').value),
+            line = parseInt(form.elements.namedItem('line-numbers').value);
+
+            if (selectedNumbers.length < numbersPerTicket) {
+                alert('Por favor, selecione a quantidade de números desejada.');
+                return;
+            }
+            else if (numbersPerTicket < condition) {
+                alert('Por favor, insira uma condição menor ou igual ao número de números por bilhete.');
+                return;
+            }
+            else if (numbersPerTicket < guarantee) {
+                alert('Por favor, insira uma garantia menor ou igual ao número de números por bilhete.');
+                return;
+            }
+            else if (even + odd < numbersPerTicket) {
+                alert('Por favor, insira uma quantidade de números pares e ímpares maior ou igual ao número de números por bilhete.');
+                return;
+            }
+            else if (collum > 8) {
+                alert('Por favor, insira uma quantidade de números na mesma coluna menor ou igual a 8.');
+                return;
+            }
+            else if (line > 10) {
+                alert('Por favor, insira uma quantidade de números na mesma linha menor ou igual a 10.');
+                return;
+            }
+            if (!selectedNumbers || !numbersPerTicket || !guarantee || !even || !odd || !collum || !line) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+        
+
         data = {
-            selectedNumbers: selectedNumbers,
-            numbersPerTicket: parseInt(
-                form.elements.namedItem('numbers-per-ticket').value
-            ),
-            condition: parseInt(form.elements.namedItem('condition').value),
-            guarantee: parseInt(form.elements.namedItem('guarantee').value),
-            even: parseInt(form.elements.namedItem('even-numbers').value),
-            odd: parseInt(form.elements.namedItem('odd-numbers').value),
-            collum: parseInt(form.elements.namedItem('collum-numbers').value),
-            line: parseInt(form.elements.namedItem('line-numbers').value)
+            selectedNumbers,
+            numbersPerTicket,
+            condition,
+            guarantee,
+            even,
+            odd,
+            collum,
+            line
         };
 
         const resultTable = document.getElementById('result');
