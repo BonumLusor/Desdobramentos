@@ -203,14 +203,6 @@
                 alert('Por favor, insira uma quantidade de números pares e ímpares maior ou igual ao número de números por bilhete.');
                 return;
             }
-            else if (collum > 8) {
-                alert('Por favor, insira uma quantidade de números na mesma coluna menor ou igual a 8.');
-                return;
-            }
-            else if (line > 10) {
-                alert('Por favor, insira uma quantidade de números na mesma linha menor ou igual a 10.');
-                return;
-            }
             if (sequencial > 10) {
                 alert('Por favor, insira uma quantidade de números sequenciais menor ou igual a 10.');
                 return;
@@ -275,6 +267,7 @@
         };
         xhr.onerror = function() {
             console.error('Request failed');
+            resultTable.innerHTML = 'ERROR';
         };
         xhr.send(JSON.stringify(data));
     }

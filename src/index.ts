@@ -14,26 +14,28 @@ const app = new Elysia().use(html())
 
 
 app.get('/', () => {
-  return new Response(Bun.file('./src/html/index.html'))
+    return new Response(Bun.file('./src/html/index.html'))
 });
 app.get('/style.css', () => {
-  return new Response(Bun.file('./src/html/style.css'))
+    return new Response(Bun.file('./src/html/style.css'))
 });
 
 app.post('/getResult', async (context ) => {
-  const body:postData = await context.body as postData;
+    const body:postData = await context.body as postData;
 
-  let result:number[][] = [];
+    let result:number[][] = [];
 
-  let combinations: number[][] = getCombinations(body.selectedNumbers, body.guarantee)
+    let combinations: number[][] = getCombinations(body.selectedNumbers, body.guarantee)
 
+    if(body.guarantee < body.numbersPerTicket)
+        combinations.forEach((array) => {
+            let filledArray: number[] | null = fill(array, body);
+            if (filledArray != null) result.push(filledArray);
+        }) 
+    else
+        result = combinations;
 
-  combinations.forEach((array) => {
-    let filledArray: number[] | null = fill(array, body);
-    if (filledArray != null) result.push(filledArray);
-  }) 
-
-  return new Response(JSON.stringify(result))
+    return new Response(JSON.stringify(result))
   
 })
 
