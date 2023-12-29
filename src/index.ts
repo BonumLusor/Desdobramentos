@@ -29,7 +29,7 @@ app.post('/getResult', async (context ) => {
 
     combinations.forEach((array) => {
         let filledArray: number[] | null = fill(array, body);
-        if (filledArray != null) result.push(filledArray);
+        if (filledArray != null && !result.includes(filledArray)) result.push(filledArray);
     }) 
 
     return new Response(JSON.stringify(result))
